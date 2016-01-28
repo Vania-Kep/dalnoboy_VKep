@@ -15,11 +15,15 @@ body{
 	position: relative;
     border-bottom: 1px solid #dadada;
 }
-.them .exit  {
+.them .top-nav  {
 	position: absolute;
     right: 5px;
+}
+.them .top-nav .top-nav-item  {
+    display: inline-block;
     padding: 10px 15px 15px 10px;
     background-color: #ddd;
+    margin-left: 5px;
 }
 .them .exit h4 {
 	margin: 0px;
@@ -40,8 +44,14 @@ body{
 .register-block {
 	width: 292px;
 	margin: 20px;
-}
+    position: absolute;
+    right: 10px;
+    top: 60px;
 
+}
+.users-managment-block {
+    width:500px;
+}
 div.row{
 	margin: 0px 10px 10px 0px;
 }
@@ -95,4 +105,34 @@ div.loader{
     height: 100%;
     margin: 0;
     padding: 0;
+}
+.user-menagment-dlg {
+    background-color: lavender;
+    padding: 10px;
+}
+button.ui-dialog-titlebar-close {
+    border: 0 none;
+    border-radius: 0 0 0 0;
+    height: 22px;
+    width: 22px;
+    z-index: 2;
+    position: absolute;
+    right: 10px;
+}
+div.ui-dialog-content{
+    margin: 5px 0px;
+}
+div.ui-dialog-buttonset button{
+    margin:5px;
+}
+div.border-decorator {
+    box-shadow: 0 0 3px 3px #888;
+    border-radius: 2px;
+    padding: 20px;
+    margin-top: 10px;
+}
+
+span.error.form-error{
+    font-weight: bold;
+    color: red;
 }

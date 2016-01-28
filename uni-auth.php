@@ -124,7 +124,7 @@ if(isset($_GET['logout'])) {
 ##Действия при попытке регистрации
 if(isset($_GET['register'])) {
    if ( USER_LOGGED && admin_permissions($UserID, $conn) ) {
-        header("Location: register.php");
+        header("Location: users.php");
    } else {
         header("Location: main.php");
    }
@@ -133,5 +133,5 @@ if(isset($_GET['register'])) {
 ##
 if(isset($_GET['main'])) {
     header("Location: main.php");
-}
+}  
 ?>

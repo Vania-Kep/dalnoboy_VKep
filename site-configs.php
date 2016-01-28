@@ -46,8 +46,7 @@ $table_prefix  = 'dboi_';
 /* Это всё, дальше не редактируем. Успехов! */
 
 /** Абсолютный путь к директории. */
-if ( !defined('ABSPATH') )
+if ( !defined('ABSPATH') ) {
 	define('ABSPATH', dirname(__FILE__) . '/');
+}
 
-/** Инициализирует переменные WordPress и подключает файлы. */
-require_once(ABSPATH . 'wp-settings.php');
