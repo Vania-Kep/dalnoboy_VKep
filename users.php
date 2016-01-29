@@ -1,14 +1,15 @@
 <?php
-include('connection.php');
-include('uni-auth.php');
-include('user-managment.php');
+	include('resources\properties.php');
+	include('components\connection.php');
+	include('functional\uni-auth.php');
+	include('functional\user-managment.php');
 
 
-if(!USER_LOGGED || !admin_permissions($UserID, $conn)) {
-	header("Location: main.php");
-} else {
-	$pageTitle = 'Users managment';
-	$pageID = 'usersManagment';
+	if(!USER_LOGGED || !admin_permissions($UserID, $conn)) {
+		header("Location: main.php");
+	} else {
+		$pageTitle = 'Users managment';
+		$pageID = 'usersManagment';
 ?>
 
 <!DOCTYPE>

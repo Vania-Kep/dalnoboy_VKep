@@ -136,3 +136,7 @@ span.error.form-error{
     font-weight: bold;
     color: red;
 }
+div.top-nav-item.selected-nav {
+    box-shadow: 0 0 3px 3px #888;
+    border-radius: 2px;
+}

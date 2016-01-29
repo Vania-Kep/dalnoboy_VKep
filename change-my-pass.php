@@ -1,48 +1,49 @@
 <?php
-include('connection.php');
-include('uni-auth.php');
-include('user-managment.php');
+	include('resources\properties.php');
+	include('components\connection.php');
+	include('functional\uni-auth.php');
 
-if (isset($_POST['change'])) {
-    if(get_magic_quotes_gpc()) { //Если слеши автоматически добавляются
-        $_GET['username']=stripslashes($_GET['username']);
-        $_POST['old-pass']=stripslashes($_POST['old-pass']);
-        $_POST['new-pass']=stripslashes($_POST['new-pass']);
-        $_POST['new-re-pass']=stripslashes($_POST['new-re-pass']);
-    }
-    $username = mysqli_real_escape_string($conn, $_GET['username']);
-    $oldPass = mysqli_real_escape_string($conn, $_POST['old-pass']);
-    $newPass = mysqli_real_escape_string($conn, $_POST['new-pass']);
-    $newRePass = mysqli_real_escape_string($conn, $_POST['new-re-pass']);
+	if(!USER_LOGGED || !check_user($UserID, $conn)) {
+		header("Location: main.php");
+	} else {
+		if (isset($_POST['change'])) {
+		    if(get_magic_quotes_gpc()) { //Если слеши автоматически добавляются
+		        $_GET['username']=stripslashes($_GET['username']);
+		        $_POST['old-pass']=stripslashes($_POST['old-pass']);
+		        $_POST['new-pass']=stripslashes($_POST['new-pass']);
+		        $_POST['new-re-pass']=stripslashes($_POST['new-re-pass']);
+		    }
+		    $username = mysqli_real_escape_string($conn, $_GET['username']);
+		    $oldPass = mysqli_real_escape_string($conn, $_POST['old-pass']);
+		    $newPass = mysqli_real_escape_string($conn, $_POST['new-pass']);
+		    $newRePass = mysqli_real_escape_string($conn, $_POST['new-re-pass']);
 
-    //find user with current user name
-    $oldPass = md5($oldPass);
-    $result = mysqli_query($conn, "SELECT * FROM `".USERS_TABLE."` WHERE `username`='$username' AND `password`='$oldPass' AND `sid`='".SID."';")
-        or die(mysqli_connect_error());
-    $USER = mysqli_fetch_array($result,1); //Генерирует удобный массив из результата запроса
-    if(empty($USER)) {
-        header('Refresh: 3;');
-        die("<div style='margin: auto; width: 350px;'><h3>Неправильні дані!</h3></div>");
-    } else if ($newPass!=$newRePass) {
-        header('Refresh: 3;');
-        die("<div style='margin: auto; width: 350px;'><h3>Паролі не співпадають!</h3></div>");
-    } else {
-    	$newPass = md5($newPass);
-    	mysqli_query($conn, "UPDATE `".USERS_TABLE."` SET `password`='$newPass' WHERE `username`='$username' AND `sid`='".SID."';")
-            or die(mysqli_connect_error());
+		    //find user with current user name
+		    $oldPass = md5($oldPass);
+		    $result = mysqli_query($conn, "SELECT * FROM `".USERS_TABLE."` WHERE `username`='$username' AND `password`='$oldPass' AND `sid`='".SID."';")
+		        or die(mysqli_connect_error());
+		    $USER = mysqli_fetch_array($result,1); //Генерирует удобный массив из результата запроса
+		    if(empty($USER)) {
+		        header('Refresh: 3;');
+		        die("<div style='margin: auto; width: 350px;'><h3>$ress_error_wrongData</h3></div>");
+		    } else if ($newPass!=$newRePass) {
+		        header('Refresh: 3;');
+		        die("<div style='margin: auto; width: 350px;'><h3>$ress_error_passwordsDontMatch</h3></div>");
+		    } else {
+   				updateSessionLifeTime();
+   				
+		    	$newPass = md5($newPass);
+		    	mysqli_query($conn, "UPDATE `".USERS_TABLE."` SET `password`='$newPass' WHERE `username`='$username' AND `sid`='".SID."';")
+		            or die(mysqli_connect_error());
 
-        die("<div style='margin: auto; width: 350px;'><h3>Пароль успішно змінено!</h3></div>");
-        header('Location: main.php;');
-    }
+		        header('Refresh: 3; main.php');
+		        die("<div style='margin: auto; width: 350px;'><h3>$ress_passWasChangedSuccesfuly</h3></div>");
+		    }
 
-}
+		}
 
-if(!USER_LOGGED || !check_user($UserID, $conn)) {
-	header("Location: main.php");
-} else {
-
-	$pageTitle = 'Change my Password';
-	$pageID = 'myPassChange';
+		$pageTitle = 'Change my Password';
+		$pageID = 'myPassChange';
 ?>
 
 <!DOCTYPE>

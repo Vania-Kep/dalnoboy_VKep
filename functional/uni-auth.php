@@ -16,7 +16,7 @@
 ##Определяем константы
 define('USERS_TABLE','users');
 define('SID',session_id());
-define("SESSION_LIFE_TIME", 5400);
+define("SESSION_LIFE_TIME", 500);
 ##Определяем функции
 //Функция выхода.
 //Пользователь считается авторизированым, если в сессии присутствует uid
@@ -62,14 +62,13 @@ function updateSessionLifeTime() {
 function check_user($uid, $conn) {
     $result = mysqli_query($conn, "SELECT `sid` FROM `".USERS_TABLE."` WHERE `uid`='$uid';") or die(mysqli_connect_error());
     $sid = array_values($result->fetch_array(MYSQLI_ASSOC))[0];
-    
+    $sid = $sid[0];
+
     $notExparedSession = ($_COOKIE["sid"] == SID);
     
     return ($sid==SID && $notExparedSession) ? true : false;
 }
 function admin_permissions($uid, $conn) {
-    updateSessionLifeTime();
-
     $result = mysqli_query($conn, "SELECT `sid`, `permissions` FROM `".USERS_TABLE."` WHERE `uid`='$uid';") or die(mysqli_connect_error());
     $data = mysqli_fetch_array($result,1);
     $sid = $data["sid"];
@@ -111,7 +110,7 @@ if (isset($_POST['login'])) {
     }
     else {
         header('Refresh: 3;');
-        die("<div style='margin: auto; width: 350px;'><h3>Неправильний логін або пароль!</h3></div>");
+        die($ress_wrongLoginOrPass = "<div style='margin: auto; width: 350px;'><h3>".$ress_wrongLoginOrPass."</h3></div>");
     }
     
 }

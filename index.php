@@ -1,15 +1,17 @@
 ﻿<?php
 
-include('connection.php'); 
-include('uni-auth.php');
+	include('resources\properties.php');
+	include('components\connection.php');
+	include('functional\uni-auth.php');
 
-if(USER_LOGGED) {
-	if(!check_user($UserID, $conn)) {
-		logout();
-	} else {
-		header("Location: main.php");
-	}
-} else { ?>
+	if(USER_LOGGED) {
+		if(!check_user($UserID, $conn)) {
+			logout();
+		} else {
+			header("Location: main.php");
+		}
+	} else { 
+?>
 	<!DOCTYPE>
 	<html>
 		<head>

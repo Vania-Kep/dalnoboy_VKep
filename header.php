@@ -1,10 +1,21 @@
+<?php 
+	function checkSelectedTopNavItem($pageID, $top_item) {
+		return $pageID == $top_item ? 'selected-nav' : '';
+	}
+?>
 <div id="header">
 	<div class="top-nav">
-		<?php if (!isset($pageID) || $pageID!="myPassChange") { ?>
-			<div class="change-pass top-nav-item">
-				<a href="change-my-pass.php?">Змінити мій пароль</a>
-			</div>
-		<?php } ?>
+
+		<div class="site-main top-nav-item <?=checkSelectedTopNavItem($pageID, 'main')?>">
+			<a href="index.php?">Головна</a>
+		</div>
+		<div class="top-nav-item <?=checkSelectedTopNavItem($pageID, 'waybills')?>">
+			<a href="waybills.php">Маршрути</a>
+		</div>
+
+		<div class="change-pass top-nav-item <?=checkSelectedTopNavItem($pageID, 'myPassChange')?>">
+			<a href="change-my-pass.php">Змінити мій пароль</a>
+		</div>
 
 		<div class="exit top-nav-item">
 			<h4><a href="?logout">Вийти</a></h4>
@@ -25,3 +36,4 @@
 		}
 	}?>
 </div>
+
