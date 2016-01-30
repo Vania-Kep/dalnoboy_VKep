@@ -1,8 +1,8 @@
 ﻿<?php
 
-	include('resources\properties.php');
-	include('components\connection.php');
-	include('functional\uni-auth.php');
+	include('resources/properties.php');
+	include('components/connection.php');
+	include('functional/uni-auth.php');
 
 	if(USER_LOGGED) {
 		if(!check_user($UserID, $conn)) {

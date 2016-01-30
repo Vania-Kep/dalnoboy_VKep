@@ -22,7 +22,7 @@
 		</div>
 
 	</div>
-	<?php if(admin_permissions($UserID, $conn) && isset($pageID)) {
+	<?php if( checkUserPermissiones($UserID, $conn,1) ) {
 		if( $pageID=="usersManagment" ) {?>
 			<div class="new-user">
 				<a href ="main.php?main">Main Page</a>

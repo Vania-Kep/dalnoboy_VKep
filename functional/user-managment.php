@@ -1,7 +1,12 @@
 <?php 
 
+$permsArray = ['0'=>'', '1'=>'admin', '2'=>'moderator', '3'=>'reader'];
 
 if (isset($_POST['registrate'])) {
+    if (!USER_LOGGED || !checkUserPermissiones($UserID, $conn, 1)) {
+        actionCanceledByPerms();
+    }
+
     if(get_magic_quotes_gpc()) { //Если слеши автоматически добавляются
         $_POST['new-user']=stripslashes($_POST['new-user']);
         $_POST['new-user-pass']=stripslashes($_POST['new-user-pass']);
@@ -25,7 +30,7 @@ if (isset($_POST['registrate'])) {
         header('Refresh: 5;');
         die("<div class='register-info'><h3>$ress_error_passwordsDontMatch</h3></div><div class='loader-bg'></div>");
     } else {
-        $newUserPermissions = mysqli_real_escape_string($conn, $_POST['new-user-permissions']);
+        $newUserPermissions = (int) mysqli_real_escape_string($conn, $_POST['new-user-permissions']);
         registrate($conn, $newUser, $newUserPass, $newUserPermissions);
     }
 }
@@ -38,15 +43,18 @@ function registrate($conn, $newUser, $newUserPass, $newUserPermissions) {
 
 function getUsers($conn) {
     $result = mysqli_query($conn, "SELECT `uid`, `username`, `permissions` FROM `".USERS_TABLE."`;") or die(mysqli_connect_error());
-  //  $data = array_values($result->fetch_array(MYSQLI_ASSOC));
     return $result ;
 }
 
 
  
 if (isset($_POST['remove']) && isset($_POST['getUsr'])) {
-    $userId = $_POST['getUsr'];
-    $userId = str_replace("usr", '', $userId);
-    mysqli_query($conn, "DELETE FROM `users` WHERE `users`.`uid` = $userId") or die("$ress_error_userDoesntRemoved");
+    if (USER_LOGGED && checkUserPermissiones($UserID, $conn, 1)) {
+        $userId = $_POST['getUsr'];
+        $userId = str_replace("usr", '', $userId);
+        mysqli_query($conn, "DELETE FROM `users` WHERE `users`.`uid` = $userId") or die("<div style='margin: auto; width: 350px;'><h3>$ress_error_userDoesntRemoved</h3></div>");
+    } else {
+        actionCanceledByPerms();
+    }
 }
 ?>

@@ -1,12 +1,12 @@
 <?php
-	include('resources\properties.php');
-	include('components\connection.php');
-	include('functional\uni-auth.php');
-	include('functional\user-managment.php');
+	include('resources/properties.php');
+	include('components/connection.php');
+	include('functional/uni-auth.php');
+	include('functional/user-managment.php');
 
 
-	if(!USER_LOGGED || !admin_permissions($UserID, $conn)) {
-		header("Location: main.php");
+	if(!USER_LOGGED || !checkUserPermissiones($UserID, $conn, 1)) {
+		actionCanceledByPerms();
 	} else {
 		$pageTitle = 'Users managment';
 		$pageID = 'usersManagment';
@@ -30,7 +30,7 @@
 				<table class="table" style="width:400px">
 				  <thead class="thead-inverse">
 				    <tr>
-				      <th>X</th>
+				      <th></th>
 				      <th>id</th>
 				      <th>Login</th>
 				      <th>Permissions</th>
@@ -42,12 +42,13 @@
 				  	$i = 0;
 				  	while($user = $users->fetch_array())
 					{$i++;
+						$permsCode = $user['permissions'];
 				?>
 					<tr>
 				      <td><input type="radio" name="getUsr" value="usr<?=$user['uid']?>"></td>
 				      <th scope="row"><?=$i?></th>
 				      <td><?=$user['username']?></td>
-				      <td><?=$user['permissions']?></td>
+				      <td><?=$permsArray[$permsCode]?></td>
 				    </tr>
 				<?php
 					}
@@ -80,9 +81,9 @@
 					<span class="collumn-1">Permissions:</span>
 					<select name='new-user-permissions' id="new-user-permissions" class="form-control">
 						<option value="" selected disabled="disabled">Select user permissions</option>					
-						<option value="admin">admin</option>	
-						<option value="moderator">moderator</option>
-						<option value="reader">reader</option>
+						<option value="1">admin</option>	
+						<option value="2">moderator</option>
+						<option value="3">reader</option>
 					</select>
 				</div>
 				<div class='row error'>

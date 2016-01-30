@@ -1,6 +1,6 @@
 <?php
-	include('components\connection.php');
-	include('functional\uni-auth.php');
+	include('components/connection.php');
+	include('functional/uni-auth.php');
 
 	if(!USER_LOGGED || !check_user($UserID, $conn)) {
 		header("Location: index.php");

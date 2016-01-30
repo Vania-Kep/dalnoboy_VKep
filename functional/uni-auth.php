@@ -1,44 +1,35 @@
 <?php
 /*
-Универсальный скрипт авторизации.
-Используется сессии для хранения данных.
-Скрипт типа "всё-в-одном" - его необходимо
-включать в каждый файл для использования.
-Распространяется по лицензии BSD.
-
-+Требования:
-+-Mysql & PHP5
-+-Созданое подключение к MySQL и запущеная сессия =)
+Needs:
+Mysql & PHP5
+Created connection to MySQL and runed session
+Созданое подключение к MySQL и запущеная сессия =)
 
 (c)2016 Ivan Kapitan
 */
 
-##Определяем константы
+##Constants
 define('USERS_TABLE','users');
 define('SID',session_id());
 define("SESSION_LIFE_TIME", 500);
-##Определяем функции
-//Функция выхода.
-//Пользователь считается авторизированым, если в сессии присутствует uid
-//см. "Действия - если пользователь авторизирован".
+
+
+
+##Functions defenition
+
 function logout() {
 	unset($_SESSION['uid']);	//Удаляем из сессии ID пользователя
     setcookie ("sid", '', time());
     die(header('Location: index.php'));
 }
 
-//Функция входа.
-//Все выбраные поля записываются в сессию.
-//Таким образом, при каждом просмотре страницы не надо выбирать их заново.
-//Для обновления информации из БД можно пользоваться этой же функцией - имя и пароль
-//хранятся в сессиях
 function login($username,$password, $conn)    {
     $result = mysqli_query($conn, "SELECT * FROM `".USERS_TABLE."` WHERE `username`='$username' AND `password`='$password';")
         or die(mysqli_connect_error());
     $USER = mysqli_fetch_array($result,1); //Генерирует удобный массив из результата запроса
     if(!empty($USER)) { //Если массив не пустой (это значит, что пара имя/пароль верная)
         $_SESSION = array_merge($_SESSION,$USER); //Добавляем массив с пользователем к массиву сессии
-        setcookie ("sid", SID, time()+SESSION_LIFE_TIME);
+        setcookie ("sid", md5(SID), time()+SESSION_LIFE_TIME);
         
         mysqli_query($conn, "UPDATE `".USERS_TABLE."` SET `sid`='".SID."' WHERE `uid`='".$USER['uid']."';")
             or die(mysqli_connect_error());
@@ -48,26 +39,23 @@ function login($username,$password, $conn)    {
         return false;
     }
 }
-//  
+
 function updateSessionLifeTime() {
-    if (isset($_COOKIE['sid'])){
-        setcookie ("sid", SID, time()+SESSION_LIFE_TIME);
+    if (isset($_COOKIE['sid'])) {
+        setcookie ("sid", md5(SID), time()+SESSION_LIFE_TIME);
     }
 }
 
-//Функция проверки залогинности пользователя.
-//При входе, ID сессии записывается в БД.
-//Если ID текущей сессии и SID из БД не совпадают, производится logout.
-//Благородя этому нельзя одновременно работать под одним ником с разных браузеров.
 function check_user($uid, $conn) {
     $result = mysqli_query($conn, "SELECT `sid` FROM `".USERS_TABLE."` WHERE `uid`='$uid';") or die(mysqli_connect_error());
-    $sid = array_values($result->fetch_array(MYSQLI_ASSOC))[0];
+    $sid = array_values($result->fetch_array(MYSQLI_ASSOC));
     $sid = $sid[0];
 
-    $notExparedSession = ($_COOKIE["sid"] == SID);
+    $notExparedSession = ($_COOKIE["sid"] == md5(SID));
     
     return ($sid==SID && $notExparedSession) ? true : false;
 }
+
 function admin_permissions($uid, $conn) {
     $result = mysqli_query($conn, "SELECT `sid`, `permissions` FROM `".USERS_TABLE."` WHERE `uid`='$uid';") or die(mysqli_connect_error());
     $data = mysqli_fetch_array($result,1);
@@ -79,7 +67,7 @@ function admin_permissions($uid, $conn) {
 
 
 ##Действия - если пользователь авторизирован
-if(isset($_SESSION['uid'])) { //Если была произведена авторизация, то в сессии есть uid
+if(isset($_SESSION['uid']) && isset($_COOKIE['sid'])) { //Если была произведена авторизация, то в сессии есть uid
 
     //Константу удобно проверять в любом месте скрипта
     define('USER_LOGGED',true);
@@ -94,7 +82,25 @@ else {
     define('USER_LOGGED',false);
 }
 
-##Действия при попытке входа
+## check user permissions permissines
+# 1 - admin
+# 2 - moderator
+# 3 - reader
+function checkUserPermissiones($uid, $conn, $perms) {
+    $result = mysqli_query($conn, "SELECT `sid`, `permissions` FROM `".USERS_TABLE."` WHERE `uid`='$uid';") or die(mysqli_connect_error());
+    $data = mysqli_fetch_array($result,1);
+    $sid = $data["sid"];
+    $userPermissions = $data["permissions"];
+
+    return ( $sid==SID && $userPermissions == $perms ) ? true : false;
+}
+
+function actionCanceledByPerms() {
+    header('Refresh: 3; index.php');
+    die("<div style='margin: auto; width: 350px;'><h3>$ress_error_actionCanceled</br>$ress_error_dontHavePermissions</h3></div>");
+}
+
+##Loginization process
 if (isset($_POST['login'])) {
     
     if(get_magic_quotes_gpc()) { //Если слеши автоматически добавляются
@@ -115,22 +121,8 @@ if (isset($_POST['login'])) {
     
 }
 
-##Действия при попытке выхода
+##LogOut process
 if(isset($_GET['logout'])) {
     logout();
 }
-
-##Действия при попытке регистрации
-if(isset($_GET['register'])) {
-   if ( USER_LOGGED && admin_permissions($UserID, $conn) ) {
-        header("Location: users.php");
-   } else {
-        header("Location: main.php");
-   }
-}
-
-##
-if(isset($_GET['main'])) {
-    header("Location: main.php");
-}  
 ?>
